@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+import crypto, { publicEncrypt } from "crypto";
+import { promises as fs } from "fs";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -13,66 +15,113 @@ app.use(bodyParser.json());
 
 app.use(express.json());
 
-// Generate asymmetric keys
 async function generateKeys() {
-  const keys = await crypto.subtle.generateKey(
-    {
-      name: "RSA-OAEP",
-      modulusLength: 2048,
-      publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-      hash: "SHA-256",
+  const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
+    modulusLength: 2048,
+    publicKeyEncoding: {
+      type: "pkcs1",
+      format: "pem",
     },
-    true,
-    ["encrypt", "decrypt"]
-  );
-  return keys;
+    privateKeyEncoding: {
+      type: "pkcs1",
+      format: "pem",
+    },
+  });
+
+  // Save keys to files
+  await fs.writeFile("private_key.pem", privateKey);
+  await fs.writeFile("public_key.pem", publicKey);
+
+  return { privateKey, publicKey };
 }
 
-// Encrypt function
-async function encryptMessage(publicKey, message) {
-  const encodedMessage = new TextEncoder().encode(message);
-  const encryptedBuffer = await crypto.subtle.encrypt(
-    {
-      name: "RSA-OAEP",
-    },
-    publicKey,
-    encodedMessage
-  );
-  const encryptedArray = Array.from(new Uint8Array(encryptedBuffer));
-  return btoa(String.fromCharCode.apply(null, encryptedArray));
+async function encryptMessage(message, publicKeyPath) {
+  try {
+    const publicKey = await fs.readFile(publicKeyPath, "utf8");
+    console.log(publicKey);
+
+    const encryptedBuffer = crypto.publicEncrypt(
+      {
+        key: publicKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256",
+      },
+      Buffer.from(message)
+    );
+
+    console.log(encryptedBuffer.toString("base64"));
+
+    return encryptedBuffer.toString("base64");
+  } catch (error) {
+    throw error;
+  }
 }
 
-// Decrypt function
-async function decryptMessage(privateKey, encryptedMessage) {
-  const encryptedArray = Uint8Array.from(atob(encryptedMessage), (c) =>
-    c.charCodeAt(0)
-  );
-  const decryptedBuffer = await crypto.subtle.decrypt(
-    {
-      name: "RSA-OAEP",
-    },
-    privateKey,
-    encryptedArray
-  );
-  return new TextDecoder().decode(decryptedBuffer);
+async function decryptMessage(encryptedMessage, privateKeyPath) {
+  try {
+    const privateKey = await fs.readFile(privateKeyPath, "utf8");
+
+    const decryptedBuffer = crypto.privateDecrypt(
+      {
+        key: privateKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256",
+      },
+      Buffer.from(encryptedMessage, "base64")
+    );
+
+    return decryptedBuffer.toString("utf8");
+  } catch (error) {
+    throw error;
+  }
 }
 
-app.post("/data", async (req, res) => {
+app.post("/createKeys", async (req, res) => {
+  try {
+    const keys = await generateKeys();
+
+    // Respond with a JSON object
+    res.json({
+      success: true,
+      message: "Keys generated successfully",
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    // Respond with an error JSON object
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+});
+
+app.post("/encryptMessage", async (req, res) => {
   const { data } = req.body;
 
   try {
-    const keys = await generateKeys();
-    const publicKey = keys.publicKey;
-    const privateKey = keys.privateKey;
-
-    const encryptedMessage = await encryptMessage(publicKey, data);
-
-    const decryptedMessage = await decryptMessage(privateKey, encryptedMessage);
+    console.log("Data to encrypt: " + data);
+    const encryptedMessage = await encryptMessage(data, "public_key.pem");
 
     // Respond with a JSON object
     res.json({
       success: true,
       message: "Data encrypted successfully: " + encryptedMessage,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    // Respond with an error JSON object
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+});
+
+app.post("/decryptMessage", async (req, res) => {
+  const { data } = req.body;
+
+  try {
+    console.log("Data to encrypt: " + data);
+    const decryptedMessage = await decryptMessage(data, "private_key.pem");
+
+    // Respond with a JSON object
+    res.json({
+      success: true,
+      message: "Data encrypted successfully: " + decryptedMessage,
     });
   } catch (error) {
     console.error("Error:", error);
