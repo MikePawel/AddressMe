@@ -14,6 +14,7 @@ const contractABI = [{"inputs":[],"name":"retrieveHash","outputs":[{"internalTyp
 
 const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
+import Intro from "../Intro/Intro";
 
 export const Display = () => {
   const { wallet } = useMetaMask();
@@ -100,6 +101,7 @@ export const Display = () => {
 
   return (
     <div className={styles.display}>
+      <Intro />
       <div className="form-container">
         <form onSubmit={handleSubmit}>
           {formData.map((data, index) => (
