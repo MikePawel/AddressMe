@@ -13,6 +13,7 @@ export const Display = () => {
     },
   ]);
   const [inputValueToDecrypt, setInputValueToDecrypt] = useState("");
+  const [numInputs, setNumInputs] = useState(1);
 
   const handleInputChange = (index, field, value) => {
     const newFormData = [...formData];
@@ -34,6 +35,7 @@ export const Display = () => {
   };
 
   const handleNumInputsChange = (count) => {
+    setNumInputs(count);
     setFormData(
       Array.from({ length: count }, () => ({ name: "", address: "" }))
     );
@@ -50,6 +52,8 @@ export const Display = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
+
+        console.log(data.message);
       })
       .catch((error) => {
         console.error(error);
@@ -120,7 +124,13 @@ export const Display = () => {
             </button>
           </div>
 
-          <div style={{ paddingTop: "20px" }}>
+          <div
+            style={{
+              paddingTop: "20px",
+              display: "flex",
+              justifyContent: "space-evenly",
+            }}
+          >
             <button type="submit" className="submit-button">
               Submit
             </button>
