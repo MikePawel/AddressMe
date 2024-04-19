@@ -3,6 +3,7 @@ import { useMetaMask } from "~/hooks/useMetaMask";
 import { useState } from "react";
 import styles from "./Display.module.css";
 import { Link } from "react-router-dom";
+import Intro from "../Intro/Intro";
 
 export const Display = () => {
   const { wallet } = useMetaMask();
@@ -81,6 +82,7 @@ export const Display = () => {
 
   return (
     <div className={styles.display}>
+      <Intro />
       <div className="form-container">
         <form onSubmit={handleSubmit}>
           {formData.map((data, index) => (
