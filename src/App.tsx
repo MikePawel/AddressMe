@@ -7,6 +7,7 @@ import { MetaMaskError } from "./components/MetaMaskError";
 import { MetaMaskContextProvider } from "./hooks/useMetaMask";
 import { Routes, Route } from "react-router-dom";
 import Encryption from "./pages/Encryption/Encryption";
+import DataDisplay from "./pages/DataDisplay/DataDisplay";
 
 export const App = () => {
   return (
@@ -16,6 +17,7 @@ export const App = () => {
         <Routes>
           <Route path="/encryption" element={<Encryption />} />
           <Route path="/" element={<Display />} />
+          <Route path="/dataDisplay" element={<DataDisplay />} />
         </Routes>
         <MetaMaskError />
       </div>

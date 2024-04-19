@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+table {
+  margin-top: 20px;
+  margin-bottom: 20px; /* Add margin-bottom to give some space below the table */
+  width: 50%; /* Set the width of the table */
+  border: 1px solid #ddd; /* Add border to the table */
+  border-collapse: collapse; /* Collapse borders */
+}

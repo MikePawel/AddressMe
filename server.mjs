@@ -38,7 +38,6 @@ async function generateKeys() {
 async function encryptMessage(message, publicKeyPath) {
   try {
     const publicKey = await fs.readFile(publicKeyPath, "utf8");
-    console.log(publicKey);
 
     const encryptedBuffer = crypto.publicEncrypt(
       {
@@ -48,8 +47,6 @@ async function encryptMessage(message, publicKeyPath) {
       },
       Buffer.from(message)
     );
-
-    console.log(encryptedBuffer.toString("base64"));
 
     return encryptedBuffer.toString("base64");
   } catch (error) {
@@ -93,16 +90,26 @@ app.post("/createKeys", async (req, res) => {
 });
 
 app.post("/encryptMessage", async (req, res) => {
-  const { data } = req.body;
-
   try {
-    console.log("Data to encrypt: " + data);
-    const encryptedMessage = await encryptMessage(data, "public_key.pem");
+    // Extract the data from the request body
+    const { data } = req.body;
+
+    // Check if data is present
+    if (!data) {
+      return res.status(400).json({ error: "Data is required" });
+    }
+
+    console.log("Data to encrypt:", data);
+
+    const encryptedMessage = await encryptMessage(
+      JSON.stringify(data), // Stringify the object before encryption
+      "public_key.pem"
+    );
 
     // Respond with a JSON object
     res.json({
       success: true,
-      message: "Data encrypted successfully: " + encryptedMessage,
+      message: encryptedMessage,
     });
   } catch (error) {
     console.error("Error:", error);
@@ -115,13 +122,14 @@ app.post("/decryptMessage", async (req, res) => {
   const { data } = req.body;
 
   try {
-    console.log("Data to encrypt: " + data);
+    console.log("Data to decrypt:", data);
     const decryptedMessage = await decryptMessage(data, "private_key.pem");
-
-    // Respond with a JSON object
+    const parsedDecryptedMessage = JSON.parse(decryptedMessage);
+    console.log(parsedDecryptedMessage);
+    // Respond with a JSON object containing the decrypted message
     res.json({
       success: true,
-      message: "Data encrypted successfully: " + decryptedMessage,
+      message: JSON.stringify(decryptedMessage),
     });
   } catch (error) {
     console.error("Error:", error);
