@@ -9,8 +9,8 @@ import { ethers } from 'ethers';
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
 
-const contractAddress = '0xFe4B974501B9eBd370ae9d73e7D7C45aEB6e7373';
-const contractABI = [{"inputs":[],"name":"retrieveHash","outputs":[{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string[]","name":"inputHash","type":"string[]"}],"name":"storeHash","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const contractAddress = '0xa65DDD99C46eF297976a6dcCFc0fE11858d89124';
+const contractABI = [{"inputs":[],"name":"retrieveHash","outputs":[{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"retrieveHash2","outputs":[{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string[]","name":"inputHash","type":"string[]"}],"name":"storeHash","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
 const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
