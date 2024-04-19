@@ -4,39 +4,13 @@ import { useState } from "react";
 import styles from "./Display.module.css";
 import { Link } from "react-router-dom";
 import { ethers } from "ethers";
+import { contractAddress } from "~/utils/contractDetails";
+import { contractABI } from "~/utils/contractDetails";
+import Intro from "../Intro/Intro";
 
-// This is an example, you might need to configure the provider based on your Ethereum network
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
-
-const contractAddress = "0xa65DDD99C46eF297976a6dcCFc0fE11858d89124";
-const contractABI = [
-  {
-    inputs: [],
-    name: "retrieveHash",
-    outputs: [{ internalType: "string[]", name: "", type: "string[]" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "address", name: "_address", type: "address" }],
-    name: "retrieveHash2",
-    outputs: [{ internalType: "string[]", name: "", type: "string[]" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "string[]", name: "inputHash", type: "string[]" }],
-    name: "storeHash",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-];
-
 const contract = new ethers.Contract(contractAddress, contractABI, signer);
-
-import Intro from "../Intro/Intro";
 
 export const Display = () => {
   const { wallet } = useMetaMask();
@@ -89,7 +63,7 @@ export const Display = () => {
         console.log(data.message);
 
         try {
-          const tx = await contract.storeHash([data.message]);
+          const tx = await contract.pushData(data.message);
           console.log(`Transaction hash: ${tx.hash}`);
           const receipt = await tx.wait();
           console.log(`Transaction confirmed in block: ${receipt.blockNumber}`);

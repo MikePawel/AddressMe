@@ -117,19 +117,44 @@ app.post("/encryptMessage", async (req, res) => {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
+function splitStringAtComma(inputString) {
+  // Split the input string at the commas
+  let splitData = inputString.split(",");
+  return splitData;
+}
 
 app.post("/decryptMessage", async (req, res) => {
-  const { data } = req.body;
-
+  let { data } = req.body;
+  data = splitStringAtComma(data);
   try {
     console.log("Data to decrypt:", data);
-    const decryptedMessage = await decryptMessage(data, "private_key.pem");
-    const parsedDecryptedMessage = JSON.parse(decryptedMessage);
-    console.log(parsedDecryptedMessage);
-    // Respond with a JSON object containing the decrypted message
+
+    // Decrypt each element of the array individually
+    let decryptedMessageArray = [];
+    for (let i = 0; i < data.length; i++) {
+      const decryptedPart = await decryptMessage(data[i], "private_key.pem");
+      decryptedMessageArray.push(decryptedPart);
+    }
+
+    // Merge the decrypted JSON objects into a single object
+    let mergedDecryptedMessage = {};
+    decryptedMessageArray.forEach((decryptedPart) => {
+      const parsedDecryptedPart = JSON.parse(decryptedPart);
+      mergedDecryptedMessage = {
+        ...mergedDecryptedMessage,
+        ...parsedDecryptedPart,
+      };
+    });
+
+    console.log("Merged Decrypted Message:", mergedDecryptedMessage);
+
+    // Convert the merged decrypted message to a JSON string
+    const mergedDecryptedMessageString = JSON.stringify(mergedDecryptedMessage);
+
+    // Respond with a JSON object containing the merged decrypted message as a string
     res.json({
       success: true,
-      message: JSON.stringify(decryptedMessage),
+      message: mergedDecryptedMessageString,
     });
   } catch (error) {
     console.error("Error:", error);
