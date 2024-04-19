@@ -3,7 +3,6 @@ import "./Encryption.css";
 import { Link } from "react-router-dom";
 
 export default function Encryption() {
-  const [inputValue, setInputValue] = useState("");
   const [inputValueToEncrypt, setInputValueToEncrypt] = useState("");
   const [inputValueToDecrypt, setInputValueToDecrypt] = useState("");
 
