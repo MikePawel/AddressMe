@@ -3,14 +3,36 @@ import { useMetaMask } from "~/hooks/useMetaMask";
 import { useState } from "react";
 import styles from "./Display.module.css";
 import { Link } from "react-router-dom";
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 
 // This is an example, you might need to configure the provider based on your Ethereum network
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
 
-const contractAddress = '0xa65DDD99C46eF297976a6dcCFc0fE11858d89124';
-const contractABI = [{"inputs":[],"name":"retrieveHash","outputs":[{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"}],"name":"retrieveHash2","outputs":[{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string[]","name":"inputHash","type":"string[]"}],"name":"storeHash","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const contractAddress = "0xa65DDD99C46eF297976a6dcCFc0fE11858d89124";
+const contractABI = [
+  {
+    inputs: [],
+    name: "retrieveHash",
+    outputs: [{ internalType: "string[]", name: "", type: "string[]" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "_address", type: "address" }],
+    name: "retrieveHash2",
+    outputs: [{ internalType: "string[]", name: "", type: "string[]" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "string[]", name: "inputHash", type: "string[]" }],
+    name: "storeHash",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];
 
 const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
@@ -25,6 +47,7 @@ export const Display = () => {
     },
   ]);
   const [inputValueToDecrypt, setInputValueToDecrypt] = useState("");
+  const [numInputs, setNumInputs] = useState(1);
 
   const handleInputChange = (index, field, value) => {
     const newFormData = [...formData];
@@ -46,6 +69,7 @@ export const Display = () => {
   };
 
   const handleNumInputsChange = (count) => {
+    setNumInputs(count);
     setFormData(
       Array.from({ length: count }, () => ({ name: "", address: "" }))
     );
@@ -53,32 +77,31 @@ export const Display = () => {
 
   const encryptKeys = (data) => {
     fetch("http://localhost:8000/encryptMessage", {
-        method: "POST",
-        body: JSON.stringify({ data }),
-        headers: {
-            "Content-Type": "application/json",
-        },
+      method: "POST",
+      body: JSON.stringify({ data }),
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
-    .then((response) => response.json())
-    .then(async (data) => {
+      .then((response) => response.json())
+      .then(async (data) => {
         console.log(data);
         console.log(data.message);
-  
-        try {
-            const tx = await contract.storeHash([data.message]);
-            console.log(`Transaction hash: ${tx.hash}`);
-            const receipt = await tx.wait();
-            console.log(`Transaction confirmed in block: ${receipt.blockNumber}`);
-            console.log('Hash stored successfully');
-        } catch (error) {
-            console.error('Error storing hash:', error);
-        }
-    })
-    .catch((error) => {
-        console.error(error);
-    });
-};  
 
+        try {
+          const tx = await contract.storeHash([data.message]);
+          console.log(`Transaction hash: ${tx.hash}`);
+          const receipt = await tx.wait();
+          console.log(`Transaction confirmed in block: ${receipt.blockNumber}`);
+          console.log("Hash stored successfully");
+        } catch (error) {
+          console.error("Error storing hash:", error);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   const decryptKeys = () => {
     fetch("http://localhost:8000/decryptMessage", {
