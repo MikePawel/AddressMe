@@ -116,67 +116,87 @@ export const Display = () => {
   };
 
   return (
-    <div className={styles.display}>
-      {/* Button that creates a new RSA key Pair */}
-      <Intro />
-      <div style={{ paddingTop: "100px" }}></div>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        flexDirection: "column",
+        marginTop: "50px",
+      }}
+    >
+      <Paper
+        elevation={3}
+        style={{
+          padding: "20px",
+          backgroundColor: "#424242",
+          marginBottom: "20px",
+          width: "800px",
+          height: "500px",
+          overflowY: "auto", // scrollable when content overflows vertically
+          color: "white", // Text color white
+        }}
+      >
+        <div className={styles.display}>
+          {/* Button that creates a new RSA key Pair */}
+          <Intro />
+          <div style={{ paddingTop: "100px" }}></div>
 
-      <div className="form-container">
-        <form onSubmit={handleSubmit}>
-          {formData.map((data, index) => (
-            <div className="input-group" key={index}>
-              <label className="form-label">Name:</label>
-              <input
-                type="text"
-                value={data.name}
-                onChange={(e) =>
-                  handleInputChange(index, "name", e.target.value)
-                }
-              />
-              <label className="form-label">Address:</label>
-              <input
-                type="text"
-                value={data.address}
-                onChange={(e) =>
-                  handleInputChange(index, "address", e.target.value)
-                }
-              />
-            </div>
-          ))}
-          <div style={{ paddingTop: "10px" }}></div>
-          <div className="input-group">
-            <button
-              type="button"
-              style={{ width: "50%" }}
-              onClick={() => handleNumInputsChange(formData.length - 1)}
-              className="submit-button"
-              disabled={formData.length === 1}
-            >
-              -
-            </button>
-            <button
-              type="button"
-              style={{ width: "50%" }}
-              onClick={() => handleNumInputsChange(formData.length + 1)}
-              className="submit-button"
-            >
-              +
-            </button>
-          </div>
+          <div className="form-container">
+            <form onSubmit={handleSubmit}>
+              {formData.map((data, index) => (
+                <div className="input-group" key={index}>
+                  <label className="form-label">Name:</label>
+                  <input
+                    type="text"
+                    value={data.name}
+                    onChange={(e) =>
+                      handleInputChange(index, "name", e.target.value)
+                    }
+                  />
+                  <label className="form-label">Address:</label>
+                  <input
+                    type="text"
+                    value={data.address}
+                    onChange={(e) =>
+                      handleInputChange(index, "address", e.target.value)
+                    }
+                  />
+                </div>
+              ))}
+              <div style={{ paddingTop: "10px" }}></div>
+              <div className="input-group">
+                <button
+                  type="button"
+                  style={{ width: "50%" }}
+                  onClick={() => handleNumInputsChange(formData.length - 1)}
+                  className="submit-button"
+                  disabled={formData.length === 1}
+                >
+                  -
+                </button>
+                <button
+                  type="button"
+                  style={{ width: "50%" }}
+                  onClick={() => handleNumInputsChange(formData.length + 1)}
+                  className="submit-button"
+                >
+                  +
+                </button>
+              </div>
 
-          <div
-            style={{
-              paddingTop: "20px",
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <button type="submit">Submit to Blockchain</button>
+              <div
+                style={{
+                  paddingTop: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <button type="submit">Submit to Blockchain</button>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-      {/* decryption testing: */}
-      {/* <div>
+          {/* decryption testing: */}
+          {/* <div>
         <input
           type="text"
           value={inputValueToDecrypt}
@@ -187,9 +207,12 @@ export const Display = () => {
           Decrypt Data
         </button>
       </div> */}
-      <div className="link-container">
-        <Link to="/encryption">Go to Encryption page</Link>
-        <Link to="/dataDisplay">Go to Data Display page</Link>
+        </div>
+      </Paper>
+      <div className="lower-button">
+        {/* Encryption page was used for test and could be used */}
+        {/* <Link to="/encryption">Go to Encryption page</Link> */}
+        <Link to="/dataDisplay">Data Display page</Link>
       </div>
     </div>
   );

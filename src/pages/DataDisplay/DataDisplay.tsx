@@ -104,6 +104,7 @@ const ApiResponseDisplay = ({ data }) => {
               borderCollapse: "collapse",
               width: "100%",
               fontSize: "14px",
+              padding: "50px",
             }}
           >
             <thead>
