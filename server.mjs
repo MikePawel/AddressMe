@@ -101,22 +101,29 @@ app.post("/encryptMessage", async (req, res) => {
         .json({ error: "Data is required and cannot be empty" });
     }
 
-    // Filter out empty values from the data object
-    data = Object.fromEntries(
-      Object.entries(data).filter(([_, value]) => value && value.trim() !== "")
-    );
+    // Convert the data object to an array of key-value pairs
+    const dataArray = Object.entries(data);
 
-    // Check if any values are present after filtering
-    if (Object.keys(data).length === 0) {
-      return res.status(400).json({ error: "Data values cannot be empty" });
+    // Split the data into chunks of maximum length 2
+    const chunkSize = 2;
+    const chunks = [];
+    for (let i = 0; i < dataArray.length; i += chunkSize) {
+      chunks.push(dataArray.slice(i, i + chunkSize));
     }
 
-    console.log("Data to encrypt:", data);
+    // Encrypt each chunk separately
+    const encryptedChunks = [];
+    for (const chunk of chunks) {
+      const chunkObject = Object.fromEntries(chunk);
+      const encryptedMessage = await encryptMessage(
+        JSON.stringify(chunkObject),
+        "public_key.pem"
+      );
+      encryptedChunks.push(encryptedMessage);
+    }
 
-    const encryptedMessage = await encryptMessage(
-      JSON.stringify(data), // Stringify the object before encryption
-      "public_key.pem"
-    );
+    // Concatenate the encrypted strings with a comma separator
+    const encryptedMessage = encryptedChunks.join(",");
 
     // Respond with a JSON object
     res.json({

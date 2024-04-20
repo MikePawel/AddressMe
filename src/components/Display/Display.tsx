@@ -211,7 +211,7 @@ export const Display = () => {
       </Paper>
       <div className="lower-button">
         {/* Encryption page was used for test and could be used */}
-        {/* <Link to="/encryption">Go to Encryption page</Link> */}
+        <Link to="/encryption">Go to Encryption page</Link>
         <Link to="/dataDisplay">Data Display page</Link>
       </div>
     </div>
