@@ -139,7 +139,7 @@ export const Display = () => {
         <div className={styles.display}>
           {/* Button that creates a new RSA key Pair */}
           <Intro />
-          <div style={{ paddingTop: "100px" }}></div>
+          <div style={{ paddingTop: "50px" }}></div>
 
           <div className="form-container">
             <form onSubmit={handleSubmit}>
@@ -211,7 +211,7 @@ export const Display = () => {
       </Paper>
       <div className="lower-button">
         {/* Encryption page was used for test and could be used */}
-        <Link to="/encryption">Go to Encryption page</Link>
+        {/* <Link to="/encryption">Go to Encryption page</Link> */}
         <Link to="/dataDisplay">Data Display page</Link>
       </div>
     </div>

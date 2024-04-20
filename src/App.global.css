@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #252525; /* Changed to #252525 for both light and dark modes */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -44,7 +44,7 @@ button {
   border: 1px solid transparent;
   font-weight: 500;
   font-family: inherit;
-  background-color: #303030;
+  background-color: #252525; /* Changed to #252525 */
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -60,18 +60,20 @@ button:focus-visible {
 }
 
 @media (prefers-color-scheme: light) {
+  /* Override background color for light mode */
+  body {
+    background-color: #252525;
+  }
+
   :root {
     color: #213547;
-    background-color: #ffffff;
   }
 
   a:hover {
     color: #747bff;
   }
 
-  button {
-    background-color: #f9f9f9;
-  }
+  /* Removed button background color change for light mode */
 }
 
 @media only screen and (max-width: 600px) {
