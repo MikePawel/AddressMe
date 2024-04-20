@@ -7,6 +7,8 @@ import { ethers } from "ethers";
 import { contractAddress } from "~/utils/contractDetails";
 import { contractABI } from "~/utils/contractDetails";
 import Intro from "../Intro/Intro";
+import { SnackbarProvider, enqueueSnackbar } from "notistack";
+import { Paper } from "@mui/material";
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
@@ -31,6 +33,7 @@ export const Display = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const combinedFormData = formData.reduce((acc, curr) => {
       acc[curr.name] = curr.address;
       return acc;
@@ -65,9 +68,25 @@ export const Display = () => {
         try {
           const tx = await contract.pushData(data.message);
           console.log(`Transaction hash: ${tx.hash}`);
+
+          // Show response message
+          <SnackbarProvider />;
+          enqueueSnackbar(
+            "Transaction created! Transaction hash: \n" +
+              tx.hash +
+              "\n Waiting for confirmation...",
+            {
+              variant: "info",
+              style: { whiteSpace: "pre-line" },
+            }
+          );
           const receipt = await tx.wait();
           console.log(`Transaction confirmed in block: ${receipt.blockNumber}`);
           console.log("Hash stored successfully");
+          enqueueSnackbar("Hash stroed successfully!", {
+            variant: "success",
+            style: { whiteSpace: "pre-line" },
+          });
         } catch (error) {
           console.error("Error storing hash:", error);
         }
@@ -98,7 +117,10 @@ export const Display = () => {
 
   return (
     <div className={styles.display}>
+      {/* Button that creates a new RSA key Pair */}
       <Intro />
+      <div style={{ paddingTop: "100px" }}></div>
+
       <div className="form-container">
         <form onSubmit={handleSubmit}>
           {formData.map((data, index) => (
@@ -142,14 +164,19 @@ export const Display = () => {
             </button>
           </div>
 
-          <div style={{ paddingTop: "20px" }}>
-            <button type="submit" className="submit-button">
-              Submit
-            </button>
+          <div
+            style={{
+              paddingTop: "20px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <button type="submit">Submit to Blockchain</button>
           </div>
         </form>
       </div>
-      <div>
+      {/* decryption testing: */}
+      {/* <div>
         <input
           type="text"
           value={inputValueToDecrypt}
@@ -159,7 +186,7 @@ export const Display = () => {
         <button onClick={decryptKeys} className="submit-button">
           Decrypt Data
         </button>
-      </div>
+      </div> */}
       <div className="link-container">
         <Link to="/encryption">Go to Encryption page</Link>
         <Link to="/dataDisplay">Go to Data Display page</Link>

@@ -1,39 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./DataDisplay.css";
 import { useMetaMask } from "~/hooks/useMetaMask";
 import { ethers } from "ethers";
 import { contractAddress } from "~/utils/contractDetails";
 import { contractABI } from "~/utils/contractDetails";
+import { Paper } from "@mui/material";
 
 export default function DataDisplay() {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contract = new ethers.Contract(contractAddress, contractABI, signer);
   const { wallet } = useMetaMask();
-  const [inputValueToDecrypt, setInputValueToDecrypt] = useState("");
   const [dataForDisplay, setDataForDisplay] = useState({});
 
   const pullData = async () => {
     try {
       const data = await contract.getUserData(wallet.accounts[0]);
-      console.log(data);
       return data;
     } catch (error) {
       console.error("Error pulling data:", error);
     }
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      if (wallet) {
+        // Check if wallet exists
+        const pullDataToForward = await pullData();
+        console.log(pullDataToForward);
+        decryptKeys(pullDataToForward);
+      }
+    };
+    fetchData();
+  }, [wallet]); // Add wallet as a dependency
 
+  // Deprecated function for connectivity testing and troubleshooting
   const forwardToDecrypt = async () => {
     const pullDataToForward = await pullData();
-    setInputValueToDecrypt(pullDataToForward);
-    decryptKeys();
+    decryptKeys(pullDataToForward);
   };
 
-  const decryptKeys = () => {
+  const decryptKeys = (getData) => {
     fetch("http://localhost:8000/decryptMessage", {
       method: "POST",
-      body: JSON.stringify({ data: inputValueToDecrypt }),
+      body: JSON.stringify({ data: getData }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -41,7 +51,6 @@ export default function DataDisplay() {
       .then((response) => response.json())
       .then((data) => {
         const parsedData = JSON.parse(data.message);
-        console.log(parsedData);
         setDataForDisplay(parsedData);
       })
       .catch((error) => {
@@ -51,80 +60,127 @@ export default function DataDisplay() {
 
   return (
     <div className="container">
-      {/* Display user data */}
-      <ApiResponseDisplay data={dataForDisplay} />
+      <div className="data-display">
+        <ApiResponseDisplay data={dataForDisplay} />
 
-      <div className="lower-button">
-        <Link to="/">Go Back</Link>
+        <div className="lower-button">
+          <Link to="/">Go Back</Link>
+        </div>
       </div>
 
-      <button onClick={forwardToDecrypt} className="submit-button">
+      {/* For testing purposes: */}
+      {/* <button onClick={forwardToDecrypt} className="submit-button">
         Pull data from blockchain
-      </button>
+      </button> */}
     </div>
   );
 }
 
 const ApiResponseDisplay = ({ data }) => {
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      console.error("Error copying to clipboard:", error);
+    }
+  };
+
   return (
     <>
-      <table
-        style={{
-          borderCollapse: "collapse",
-          width: "80vw",
-        }}
-      >
-        <thead>
-          <tr>
-            <th
-              style={{
-                border: "1px solid #ddd",
-                padding: "8px",
-                textAlign: "left",
-                fontWeight: "bold",
-              }}
-            >
-              Name
-            </th>
-            <th
-              style={{
-                border: "1px solid #ddd",
-                padding: "8px",
-                textAlign: "left",
-                fontWeight: "bold",
-              }}
-            >
-              Address
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Check if data is not empty before mapping */}
-          {Object.entries(data).length > 0 &&
-            Object.entries(data).map(([name, address], index) => (
-              <tr key={index}>
-                <td
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <Paper
+          elevation={3}
+          style={{
+            padding: "20px",
+            backgroundColor: "#424242",
+            marginBottom: "20px",
+            width: "800px",
+            height: "500px",
+            overflowY: "auto", // scrollable when content overflows vertically
+          }}
+        >
+          <table
+            style={{
+              borderCollapse: "collapse",
+              width: "100%",
+              fontSize: "14px",
+            }}
+          >
+            <thead>
+              <tr>
+                <th
                   style={{
                     border: "1px solid #ddd",
-                    padding: "8px",
+                    padding: "10px",
                     textAlign: "left",
+                    fontWeight: "bold",
+                    color: "#ffffff",
                   }}
                 >
-                  {name}
-                </td>
-                <td
+                  Name
+                </th>
+                <th
                   style={{
                     border: "1px solid #ddd",
-                    padding: "8px",
+                    padding: "10px",
                     textAlign: "left",
+                    fontWeight: "bold",
+                    color: "#ffffff",
                   }}
                 >
-                  {address}
-                </td>
+                  Address
+                </th>
               </tr>
-            ))}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {/* Sort the data by name before mapping */}
+
+              {Object.entries(data)
+                .filter(
+                  ([name, address]) =>
+                    name.trim() !== "" && address.trim() !== ""
+                ) // Filter out empty inputs
+                .sort(([nameA], [nameB]) => nameA.localeCompare(nameB)) // Sort by name
+                .map(([name, address], index) => (
+                  <tr key={index}>
+                    <td
+                      style={{
+                        border: "1px solid #ddd",
+                        padding: "10px",
+                        textAlign: "left",
+                        color: "#ffffff",
+                      }}
+                    >
+                      {name}
+                    </td>
+                    <td
+                      style={{
+                        border: "1px solid #ddd",
+                        padding: "10px",
+                        textAlign: "left",
+                        color: "#ffffff",
+                        position: "relative",
+                      }}
+                    >
+                      {address}
+                      <button
+                        style={{
+                          position: "absolute",
+                          right: "10px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                        }}
+                        onClick={() => copyToClipboard(address)}
+                      >
+                        Copy
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </Paper>
+      </div>
     </>
   );
 };

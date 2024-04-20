@@ -3,13 +3,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
 }
 
 table {
-  margin-top: 20px;
-  margin-bottom: 20px; /* Add margin-bottom to give some space below the table */
-  width: 50%; /* Set the width of the table */
-  border: 1px solid #ddd; /* Add border to the table */
-  border-collapse: collapse; /* Collapse borders */
+  width: 100%; /* Make the table take up the full width of its container */
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+}
+
+.data-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px; /* Adjust as needed */
+}
+
+.lower-button {
+  margin-top: 20px; /* Adjust as needed */
 }

@@ -92,11 +92,23 @@ app.post("/createKeys", async (req, res) => {
 app.post("/encryptMessage", async (req, res) => {
   try {
     // Extract the data from the request body
-    const { data } = req.body;
+    let { data } = req.body;
 
     // Check if data is present
-    if (!data) {
-      return res.status(400).json({ error: "Data is required" });
+    if (!data || Object.keys(data).length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Data is required and cannot be empty" });
+    }
+
+    // Filter out empty values from the data object
+    data = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value && value.trim() !== "")
+    );
+
+    // Check if any values are present after filtering
+    if (Object.keys(data).length === 0) {
+      return res.status(400).json({ error: "Data values cannot be empty" });
     }
 
     console.log("Data to encrypt:", data);
@@ -117,10 +129,17 @@ app.post("/encryptMessage", async (req, res) => {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
+
 function splitStringAtComma(inputString) {
   // Split the input string at the commas
-  let splitData = inputString.split(",");
-  return splitData;
+  try {
+    let splitData = inputString.split(",");
+
+    return splitData;
+  } catch (error) {
+    console.error("Error:", error);
+    return NaN;
+  }
 }
 
 app.post("/decryptMessage", async (req, res) => {
