@@ -27,6 +27,9 @@ Each JSON segment undergoes hashing before transmission to the selected blockcha
 **Data Retrieval and Decryption:**
 When users need access to stored information, the corresponding hash is retrieved from the blockchain, decrypted locally using the RSA private key, and sorted alphabetically for easy retrieval.
 
+**The workflow:**
+<img src="Workflow.png" alt="Workflow" width="800"/>
+
 **Technological Stack:**
 - **Blockchain Integration:** Morph Testnet, Avail Sepolia, Arbitrum Sepolia, and Gnosis Chiado.
 - **Smart Contract:** Solidity.
