@@ -1,14 +1,14 @@
 require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
-require('dotenv').config();
+require("dotenv").config();
 
-INFURA_API_KEY_ARBITRUM = "https://arbitrum-sepolia.infura.io/v3/a146daf63d93490995823f0910f50118"
-INFURA_API_KEY_MUMBAI = "https://arbitrum-sepolia.infura.io/v3/a146daf63d93490995823f0910f50118"
+INFURA_API_KEY_ARBITRUM = process.env.VITE_INFURA_API_KEY_ARBITRUM;
+INFURA_API_KEY_MUMBAI = process.env.VITE_INFURA_API_KEY_MUMBAI;
 
 PRIVATE_KEY = process.env.VITE_PRIVATE_KEY;
 
-ETHERSCAN_API_KEY_ARBITRUM = "WKR6EQCREDHJKK7RZMHPDXMC19HND6RU9G"
-ETHERSCAN_API_KEY_MUMBAI = "WKR6EQCREDHJKK7RZMHPDXMC19HND6RU9G"
+ETHERSCAN_API_KEY_ARBITRUM = process.env.ETHERSCAN_API_KEY_ARBITRUM;
+ETHERSCAN_API_KEY_MUMBAI = process.env.ETHERSCAN_API_KEY_MUMBAI;
 
 module.exports = {
   solidity: "0.8.6",
@@ -23,6 +23,6 @@ module.exports = {
     },
   },
   etherscan: {
-      apiKey: ETHERSCAN_API_KEY_MUMBAI,
+    apiKey: ETHERSCAN_API_KEY_MUMBAI,
   },
 };
