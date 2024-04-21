@@ -1,4 +1,3 @@
-export const contractAddress = "0x73f43095b33e10d4F315869B1c57F2934d974763";
 export const contractAddressArbitrum =
   "0x73f43095b33e10d4F315869B1c57F2934d974763";
 export const contractAddressGnosis =
