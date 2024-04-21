@@ -4,7 +4,6 @@ import { useState } from "react";
 import styles from "./Display.module.css";
 import { Link } from "react-router-dom";
 import { ethers } from "ethers";
-import { contractAddress } from "~/utils/contractDetails";
 import { contractAddressArbitrum } from "~/utils/contractDetails";
 import { contractAddressGnosis } from "~/utils/contractDetails";
 import { contractAddressMorph } from "~/utils/contractDetails";
@@ -38,7 +37,7 @@ export const Display = () => {
     e.preventDefault();
 
     let currentNet = parseInt(wallet.chainId, 16);
-    let currentAddress = contractAddress;
+    let currentAddress = contractAddressMorph;
     if (currentNet === 421614) {
       currentAddress = contractAddressArbitrum;
     } else if (currentNet === 2710) {

@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import "./DataDisplay.css";
 import { useMetaMask } from "~/hooks/useMetaMask";
 import { ethers } from "ethers";
-import { contractAddress } from "~/utils/contractDetails";
 import { contractAddressArbitrum } from "~/utils/contractDetails";
 import { contractAddressGnosis } from "~/utils/contractDetails";
 import { contractAddressMorph } from "~/utils/contractDetails";
@@ -16,7 +15,7 @@ export default function DataDisplay() {
   const [dataForDisplay, setDataForDisplay] = useState({});
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
-  var contract = new ethers.Contract(contractAddress, contractABI, signer);
+  var contract = new ethers.Contract(contractAddressMorph, contractABI, signer);
 
   const pullData = async () => {
     try {
@@ -29,7 +28,7 @@ export default function DataDisplay() {
   useEffect(() => {
     // check which network the user is connected to and set the contract address accordingly
     let currentNet = parseInt(wallet.chainId, 16);
-    let currentAddress = contractAddress;
+    let currentAddress = contractAddressMorph;
     if (currentNet === 421614) {
       currentAddress = contractAddressArbitrum;
     } else if (currentNet === 2710) {
