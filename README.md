@@ -28,6 +28,7 @@ Each JSON segment undergoes hashing before transmission to the selected blockcha
 When users need access to stored information, the corresponding hash is retrieved from the blockchain, decrypted locally using the RSA private key, and sorted alphabetically for easy retrieval.
 
 **The workflow:**
+
 <img src="Workflow.png" alt="Workflow" width="600"/>
 
 **Technological Stack:**
