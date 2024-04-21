@@ -29,9 +29,9 @@ When users need access to stored information, the corresponding hash is retrieve
 
 **The workflow:**
 
-<div style="text-align:center;">
+<p align="center">
   <img src="Workflow.png" alt="Workflow" width="600"/>
-</div>
+</p>
 
 **Technological Stack:**
 - **Blockchain Integration:** Morph Testnet, Avail Sepolia, Arbitrum Sepolia, and Gnosis Chiado.
