@@ -1,6 +1,7 @@
 import { useMetaMask } from "~/hooks/useMetaMask";
 import { formatAddress } from "~/utils";
 import styles from "./Navigation.module.css";
+import NetworkSwitch from "../NetworkSwitch/NetworkSwitch";
 
 export const Navigation = () => {
   const { wallet, hasProvider, isConnecting, connectMetaMask } = useMetaMask();
@@ -20,16 +21,20 @@ export const Navigation = () => {
               Connect MetaMask
             </button>
           )}
-          {hasProvider && wallet.accounts.length > 0 && (
-            <a
-              className="text_link tooltip-bottom"
-              href={`https://etherscan.io/address/${wallet.accounts[0]}`} // Error corrected
-              target="_blank"
-              data-tooltip="Open in Block Explorer"
-            >
-              {formatAddress(wallet.accounts[0])}
-            </a>
-          )}
+          <div style={{ display: "flex" }}>
+            <NetworkSwitch />
+            <div style={{ paddingLeft: "10px" }}></div>
+            {hasProvider && wallet.accounts.length > 0 && (
+              <a
+                className="text_link tooltip-bottom"
+                href={`https://etherscan.io/address/${wallet.accounts[0]}`} // Error corrected
+                target="_blank"
+                data-tooltip="Open in Block Explorer"
+              >
+                {formatAddress(wallet.accounts[0])}
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </div>

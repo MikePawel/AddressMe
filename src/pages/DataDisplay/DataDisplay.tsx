@@ -4,15 +4,19 @@ import "./DataDisplay.css";
 import { useMetaMask } from "~/hooks/useMetaMask";
 import { ethers } from "ethers";
 import { contractAddress } from "~/utils/contractDetails";
+import { contractAddressArbitrum } from "~/utils/contractDetails";
+import { contractAddressGnosis } from "~/utils/contractDetails";
+import { contractAddressMorph } from "~/utils/contractDetails";
+import { contractAddressAvail } from "~/utils/contractDetails";
 import { contractABI } from "~/utils/contractDetails";
 import { Paper } from "@mui/material";
 
 export default function DataDisplay() {
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  const contract = new ethers.Contract(contractAddress, contractABI, signer);
   const { wallet } = useMetaMask();
   const [dataForDisplay, setDataForDisplay] = useState({});
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  var contract = new ethers.Contract(contractAddress, contractABI, signer);
 
   const pullData = async () => {
     try {
@@ -23,9 +27,21 @@ export default function DataDisplay() {
     }
   };
   useEffect(() => {
+    // check which network the user is connected to and set the contract address accordingly
+    let currentNet = parseInt(wallet.chainId, 16);
+    let currentAddress = contractAddress;
+    if (currentNet === 421614) {
+      currentAddress = contractAddressArbitrum;
+    } else if (currentNet === 2710) {
+      currentAddress = contractAddressMorph;
+    } else if (currentNet === 202402021700) {
+      currentAddress = contractAddressAvail;
+    } else if (currentNet === 10200) {
+      currentAddress = contractAddressGnosis;
+    }
+    contract = new ethers.Contract(currentAddress, contractABI, signer);
     const fetchData = async () => {
       if (wallet) {
-        // Check if wallet exists
         const pullDataToForward = await pullData();
         console.log(pullDataToForward);
         decryptKeys(pullDataToForward);
@@ -40,7 +56,7 @@ export default function DataDisplay() {
     decryptKeys(pullDataToForward);
   };
 
-  const decryptKeys = (getData) => {
+  const decryptKeys = (getData: any) => {
     fetch("http://localhost:8000/decryptMessage", {
       method: "POST",
       body: JSON.stringify({ data: getData }),
@@ -55,6 +71,7 @@ export default function DataDisplay() {
       })
       .catch((error) => {
         console.error(error);
+        setDataForDisplay({ null: "null" });
       });
   };
 

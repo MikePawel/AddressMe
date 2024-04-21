@@ -1,21 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useMetaMask } from "~/hooks/useMetaMask";
 import { useState } from "react";
 import styles from "./Display.module.css";
 import { Link } from "react-router-dom";
 import { ethers } from "ethers";
 import { contractAddress } from "~/utils/contractDetails";
+import { contractAddressArbitrum } from "~/utils/contractDetails";
+import { contractAddressGnosis } from "~/utils/contractDetails";
+import { contractAddressMorph } from "~/utils/contractDetails";
+import { contractAddressAvail } from "~/utils/contractDetails";
 import { contractABI } from "~/utils/contractDetails";
 import Intro from "../Intro/Intro";
 import { SnackbarProvider, enqueueSnackbar } from "notistack";
 import { Paper } from "@mui/material";
 
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-const signer = provider.getSigner();
-const contract = new ethers.Contract(contractAddress, contractABI, signer);
-
 export const Display = () => {
   const { wallet } = useMetaMask();
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+
   const [formData, setFormData] = useState([
     {
       name: "",
@@ -34,12 +37,25 @@ export const Display = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    let currentNet = parseInt(wallet.chainId, 16);
+    let currentAddress = contractAddress;
+    if (currentNet === 421614) {
+      currentAddress = contractAddressArbitrum;
+    } else if (currentNet === 2710) {
+      currentAddress = contractAddressMorph;
+    } else if (currentNet === 202402021700) {
+      currentAddress = contractAddressAvail;
+    } else if (currentNet === 10200) {
+      currentAddress = contractAddressGnosis;
+    }
+
+    const contract = new ethers.Contract(currentAddress, contractABI, signer);
     const combinedFormData = formData.reduce((acc, curr) => {
       acc[curr.name] = curr.address;
       return acc;
     }, {});
     console.log(combinedFormData);
-    encryptKeys(combinedFormData);
+    encryptKeys(contract, combinedFormData); // Pass contract instance to encryptKeys
     setFormData(
       Array.from({ length: numInputs }, () => ({ name: "", address: "" }))
     );
@@ -52,7 +68,8 @@ export const Display = () => {
     );
   };
 
-  const encryptKeys = (data) => {
+  const encryptKeys = (contract, data) => {
+    // Receive contract instance as parameter
     fetch("http://localhost:8000/encryptMessage", {
       method: "POST",
       body: JSON.stringify({ data }),
@@ -70,7 +87,7 @@ export const Display = () => {
           console.log(`Transaction hash: ${tx.hash}`);
 
           // Show response message
-          <SnackbarProvider />;
+          // <SnackbarProvider />; // You don't need this line here
           enqueueSnackbar(
             "Transaction created! Transaction hash: \n" +
               tx.hash +
@@ -83,7 +100,7 @@ export const Display = () => {
           const receipt = await tx.wait();
           console.log(`Transaction confirmed in block: ${receipt.blockNumber}`);
           console.log("Hash stored successfully");
-          enqueueSnackbar("Hash stroed successfully!", {
+          enqueueSnackbar("Hash stored successfully!", {
             variant: "success",
             style: { whiteSpace: "pre-line" },
           });
@@ -139,8 +156,8 @@ export const Display = () => {
         <div className={styles.display}>
           {/* Button that creates a new RSA key Pair */}
           <Intro />
-          <div style={{ paddingTop: "50px" }}></div>
 
+          <div style={{ paddingTop: "50px" }}></div>
           <div className="form-container">
             <form onSubmit={handleSubmit}>
               {formData.map((data, index) => (
